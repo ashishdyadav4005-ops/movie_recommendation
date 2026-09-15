@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System | Machine Learning</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <span class="brand-icon">🎬</span>
+                <div>
+                    <h1 class="brand-title">Cine<span class="green-text">Match</span></h1>
+                    <span class="brand-subtitle">Personalized Movie Recommendation System</span>
+                </div>
+            </div>
+            <div class="nav-badge">
+                <span class="dot"></span>
+                <span>ML Model Active • {{ total_movies }} Movies</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <!-- Search Bar Section -->
+        <section class="search-section">
+            <h2 class="search-title">Find Any Movie & Its <span class="green-text">Rating</span></h2>
+            <p class="search-desc">Type any movie name to check its details, IMDb rating, and get instant Machine Learning recommendations.</p>
+
+            <div class="search-bar-wrapper">
+                <div class="search-input-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="movieSearchInput" placeholder="Search a movie (e.g. 3 Idiots, Sholay, Dangal, DDLJ, Inception, Interstellar)..." autocomplete="off">
+                    <button id="clearSearchBtn" class="clear-search-btn hidden" title="Clear search">&times;</button>
+                    <div id="searchResultsDropdown" class="search-dropdown hidden"></div>
+                </div>
+                <button id="searchBtn" class="btn-green">Search</button>
+            </div>
+        </section>
+
+        <!-- Selected Movie Details Card -->
+        <section id="selectedMovieSection" class="selected-movie-section">
+            <!-- Populated dynamically -->
+        </section>
+
+        <!-- Recommended Movies Section -->
+        <section id="recommendationsSection" class="recommendations-section">
+            <div class="section-title-row">
+                <h3 id="recommendationsTitle">Recommended Movies</h3>
+                <span class="badge-green">Machine Learning (Cosine Similarity)</span>
+            </div>
+            <div id="recommendationsGrid" class="movies-grid">
+                <!-- Recommended movie cards -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toastNotification" class="toast hidden"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
