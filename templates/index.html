@@ -3,11 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Recommendation System | Machine Learning</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Personalized Movie & Book Recommendation System</title>
+    <link rel="stylesheet" href="/static/css/style.css?v={{ cache_bust }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Immediate fallback styles to guarantee zero unstyled buttons */
+        .mode-switcher-container { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .mode-tabs { display: inline-flex; background: #101512; border: 1px solid #1c2b20; padding: 6px; border-radius: 50px; }
+        .mode-tab { display: flex; align-items: center; gap: 0.6rem; background: transparent; border: none; color: #9ca3af; padding: 0.65rem 1.8rem; border-radius: 40px; font-size: 0.98rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s ease; }
+        .mode-tab:hover { color: #f3f4f6; }
+        .mode-tab.active { background: #00e676 !important; color: #041008 !important; box-shadow: 0 0 20px rgba(0, 230, 118, 0.25); }
+        .btn-shuffle { background: rgba(255, 255, 255, 0.08) !important; border: 1px solid #1c2b20 !important; color: #f3f4f6 !important; padding: 0.55rem 1.25rem !important; border-radius: 20px !important; font-size: 0.85rem !important; font-weight: 700 !important; cursor: pointer !important; font-family: inherit !important; display: inline-flex !important; align-items: center !important; }
+        .btn-shuffle:hover { background: rgba(0, 230, 118, 0.15) !important; border-color: #00e676 !important; color: #00e676 !important; }
+    </style>
 </head>
 <body>
 
@@ -15,50 +25,98 @@
     <header class="navbar">
         <div class="nav-container">
             <div class="brand">
-                <span class="brand-icon">🎬</span>
+                <span class="brand-icon">🎬📚</span>
                 <div>
-                    <h1 class="brand-title">Cine<span class="green-text">Match</span></h1>
-                    <span class="brand-subtitle">Personalized Movie Recommendation System</span>
+                    <h1 class="brand-title">Cine<span class="green-text">Book</span></h1>
+                    <span class="brand-subtitle">Personalized Movie & Book Recommendation System</span>
                 </div>
             </div>
             <div class="nav-badge">
                 <span class="dot"></span>
-                <span>ML Model Active • {{ total_movies }} Movies</span>
+                <span>100 Movies & 100 Books Catalog</span>
             </div>
         </div>
     </header>
 
     <main class="main-container">
 
+        <!-- Mode Switcher Tabs (Movies vs Books) -->
+        <div class="mode-switcher-container">
+            <div class="mode-tabs">
+                <button id="tabMovies" class="mode-tab active" data-mode="movies">
+                    <span class="tab-icon">🎬</span>
+                    <span class="tab-label">Movies</span>
+                    <span class="tab-count">100</span>
+                </button>
+                <button id="tabBooks" class="mode-tab" data-mode="books">
+                    <span class="tab-icon">📚</span>
+                    <span class="tab-label">Books</span>
+                    <span class="tab-count">100</span>
+                </button>
+            </div>
+
+            <!-- Sub-filter pills for Books (Hidden in Movie mode) -->
+            <div id="bookFilterRow" class="sub-filter-row hidden">
+                <span class="filter-label">Filter:</span>
+                <button class="filter-pill active" data-filter="all">All Books (100)</button>
+                <button class="filter-pill" data-filter="indian">🇮🇳 Indian Writers (60)</button>
+                <button class="filter-pill" data-filter="international">🌐 International Writers (40)</button>
+            </div>
+        </div>
+
         <!-- Search Bar Section -->
         <section class="search-section">
-            <h2 class="search-title">Find Any Movie & Its <span class="green-text">Rating</span></h2>
-            <p class="search-desc">Type any movie name to check its details, IMDb rating, and get instant Machine Learning recommendations.</p>
+            <h2 id="searchTitle" class="search-title">Find Any Movie & Its <span class="green-text">Rating</span></h2>
+            <p id="searchDesc" class="search-desc">Type any movie name to check its details, IMDb rating, and get instant recommendations.</p>
 
             <div class="search-bar-wrapper">
                 <div class="search-input-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="movieSearchInput" placeholder="Search a movie (e.g. 3 Idiots, Sholay, Dangal, DDLJ, Inception, Interstellar)..." autocomplete="off">
+                    <span id="searchBoxIcon" class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search a movie (e.g. 3 Idiots, Sholay, Dangal, Inception, Interstellar)..." autocomplete="off">
                     <button id="clearSearchBtn" class="clear-search-btn hidden" title="Clear search">&times;</button>
                     <div id="searchResultsDropdown" class="search-dropdown hidden"></div>
                 </div>
                 <button id="searchBtn" class="btn-green">Search</button>
             </div>
+
+            <!-- Quick Suggestions Pills -->
+            <div class="quick-picks-container">
+                <span class="quick-picks-label">Popular:</span>
+                <div id="quickPicksRow" class="quick-picks-row">
+                    <!-- Populated dynamically based on active mode -->
+                </div>
+            </div>
         </section>
 
-        <!-- Selected Movie Details Card -->
-        <section id="selectedMovieSection" class="selected-movie-section">
-            <!-- Populated dynamically -->
+        <!-- Selected Item (Movie / Book) Details Card -->
+        <section id="selectedItemSection" class="selected-item-section">
+            <!-- Populated dynamically when user searches or clicks an item -->
         </section>
 
-        <!-- Recommended Movies Section -->
+        <!-- Recommended Items Section -->
         <section id="recommendationsSection" class="recommendations-section">
             <div class="section-title-row">
                 <h3 id="recommendationsTitle">Recommended Movies</h3>
-                <span class="badge-green">Machine Learning (Cosine Similarity)</span>
+                <span id="recommendationEngineBadge" class="badge-green">Similar Recommendations</span>
             </div>
-            <div id="recommendationsGrid" class="movies-grid">
-                <!-- Recommended movie cards -->
+            <div id="recommendationsGrid" class="items-grid">
+                <!-- Recommended movie / book cards -->
+            </div>
+        </section>
+
+        <!-- Discover / Random Items Section (ALWAYS VISIBLE on page) -->
+        <section id="exploreSection" class="explore-section">
+            <div class="section-title-row">
+                <div>
+                    <h3 id="exploreTitle">Discover Movies</h3>
+                    <span id="exploreSubtitle" class="explore-subtitle">Click any title to view details and recommendations</span>
+                </div>
+                <button id="shuffleBtn" class="btn-shuffle" title="Show different random titles">
+                    <span>🎲 Shuffle / Randomize</span>
+                </button>
+            </div>
+            <div id="exploreGrid" class="items-grid">
+                <!-- Random movies or books populated immediately -->
             </div>
         </section>
 
@@ -67,6 +125,6 @@
     <!-- Notification Toast -->
     <div id="toastNotification" class="toast hidden"></div>
 
-    <script src="/static/js/app.js"></script>
+    <script src="/static/js/app.js?v={{ cache_bust }}"></script>
 </body>
 </html>

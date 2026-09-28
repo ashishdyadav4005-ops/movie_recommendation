@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Media Gallery Audit - 100 Movies & 100 Books</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0c100e; color: #f3f4f6; margin: 0; padding: 2rem; }
+        h1, h2 { color: #00e676; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .card { background: #131a15; border: 1px solid #1c2b20; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 260px; object-fit: cover; background: #080c09; }
+        .info { padding: 0.75rem; font-size: 0.85rem; }
+        .title { font-weight: 700; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub { color: #9ca3af; font-size: 0.75rem; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-top: 0.4rem; }
+        .badge-indian { background: rgba(0, 230, 118, 0.15); color: #00e676; }
+        .badge-intl { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    </style>
+</head>
+<body>
+    <h1>🎬 100 Movie Posters Audit</h1>
+    <div id="moviesGrid" class="grid"></div>
+
+    <h1>📚 100 Book Covers Audit</h1>
+    <div id="booksGrid" class="grid"></div>
+
+    <script>
+        async function load() {
+            const mRes = await fetch('/api/movies');
+            const mData = await mRes.json();
+            const mGrid = document.getElementById('moviesGrid');
+            mData.movies.forEach(m => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                el.innerHTML = `
+                    <img src="${m.poster_url}?v=20260924_art2" alt="${m.title}" loading="lazy">
+                    <div class="info">
+                        <div class="title">#${m.movieId} ${m.title}</div>
+                        <div class="sub">${m.release_year} • ⭐ ${m.imdb_rating}</div>
+                    </div>
+                `;
+                mGrid.appendChild(el);
+            });
+
+            const bRes = await fetch('/api/books');
+            const bData = await bRes.json();
+            const bGrid = document.getElementById('booksGrid');
+            bData.books.forEach(b => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                const bCls = b.origin === 'Indian' ? 'badge-indian' : 'badge-intl';
+                el.innerHTML = `
+                    <img src="${b.cover_url}?v=20260924_art2" alt="${b.title}" loading="lazy">
+                    <div class="info">
+                        <div class="title">#${b.bookId} ${b.title}</div>
+                        <div class="sub">${b.author}</div>
+                        <span class="badge ${bCls}">${b.origin}</span>
+                    </div>
+                `;
+                bGrid.appendChild(el);
+            });
+        }
+        load();
+    </script>
+</body>
+</html>
