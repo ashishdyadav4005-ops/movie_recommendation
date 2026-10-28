@@ -1,3 +1,4 @@
+095175
 # 🎬📚 CineBook AI: Personalized Movie & Book Recommendation System
 
 > **An end-to-end, dual-domain Machine Learning Recommendation Engine combining Content-Based Filtering (TF-IDF & Cosine Similarity) and Collaborative Filtering (Truncated SVD Matrix Factorization). It analyzes genres, directors, authors, themes, and user interactions to deliver personalized recommendations across 100 Films (40 Hollywood + 60 Bollywood) and 100 Books (60 Indian Writers + 40 International Writers) through a high-performance web dashboard.**
